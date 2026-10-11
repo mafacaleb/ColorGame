@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Círculos Gigantes de Colores con Sonido</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.85); opacity: 0; }
+            70% { transform: scale(1.04); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .color-circle {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            cursor: pointer;
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4), inset 0 -8px 15px rgba(0, 0, 0, 0.2), inset 0 8px 15px rgba(255, 255, 255, 0.3);
+        }
+        .color-circle:hover {
+            transform: translateY(-6px) scale(1.04);
+            box-shadow: 0 25px 45px -5px rgba(0, 0, 0, 0.6), inset 0 -8px 15px rgba(0, 0, 0, 0.2), inset 0 8px 15px rgba(255, 255, 255, 0.4);
+        }
+        .color-circle:active {
+            transform: translateY(0) scale(0.97);
+        }
+    </style>
+</head>
+<body class="flex flex-col justify-between items-center min-h-screen p-4 sm:p-6">
+
+    <header class="text-center w-full max-w-4xl mb-2">
+        <h1 class="text-xl sm:text-3xl font-black text-white tracking-tight drop-shadow-md">Explorador de Colores con Sonido</h1>
+        <p class="text-slate-400 text-xs sm:text-sm mt-0.5">Haz clic en cualquier círculo gigante para escuchar y ver su nombre</p>
+    </header>
+
+    <main class="w-full max-w-5xl flex flex-col items-center justify-center my-auto flex-grow">
+        
+        <!-- Result Display Banner -->
+        <div id="display-card" class="mb-5 sm:mb-7 w-full max-w-md bg-slate-900/95 backdrop-blur-md border-2 border-slate-700/80 shadow-2xl rounded-2xl py-3 px-6 text-center transition-all duration-300">
+            <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 block mb-0.5">Color Seleccionado</span>
+            <h2 id="color-name" class="text-2xl sm:text-4xl font-black text-slate-100 tracking-wide transition-colors duration-300">¡Selecciona uno!</h2>
+            <div id="audio-status" class="text-[10px] text-slate-500 mt-1 h-4"></div>
+        </div>
+
+        <!-- Grid 3x3 de círculos -->
+        <div class="grid grid-cols-3 gap-3 sm:gap-6 lg:gap-8 w-full max-w-3xl justify-items-center items-center px-2">
+            
+            <!-- 1. Rojo -->
+            <div onclick="selectColor('Rojo', '#ef4444', 'rojo.wav')" 
+                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-red-600 via-red-500 to-rose-400 flex items-center justify-center group">
+                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Rojo</span>
+            </div>
+
+            <!-- 2. Azul -->
+            <div onclick="selectColor('Azul', '#3b82f6', 'azul.wav')" 
+                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-blue-600 via-blue-500 to-sky-400 flex items-center justify-center group">
+                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Azul</span>
+            </div>
+
+            <!-- 3. Verde -->
+            <div onclick="selectColor('Verde', '#22c55e', 'verde.wav')" 
+                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-green-600 via-green-500 to-emerald-300 flex items-center justify-center group">
+                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Verde</span>
+            </div>
+
+            <!-- 4. Amarillo -->
+            <div onclick="selectColor('Amarillo', '#facc15', 'amarillo.wav')" 
+                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-yellow-600 via-yellow-400 to-amber-200 flex items-center justify-center group">
+                <span class="text-slate-900 font-extrabold text-xs sm:text-lg drop-shadow-sm opacity-95 group-hover:scale-110 transition-transform">Amarillo</span>
+            </div>
+
+            <!-- 5. Naranja -->
+            <div onclick="selectColor('Naranja', '#f97316', 'naranja.wav')" 
+                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-orange-600 via-orange-500 to-amber-300 flex items-center justify-center group">
+                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Naranja</span>
+            </div>
+
+            <!-- 6. Rosa -->
+            <div onclick="selectColor('Rosa', '#ec4899', 'rosa.wav')" 
+                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-pink-600 via-pink-500 to-rose-300 flex items-center justify-center group">
+                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Rosa</span>
+            </div>
+
+            <!-- 7. Negro -->
+            <div onclick="selectColor('Negro', '#f8fafc', 'negro.wav')" 
+                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-black via-slate-900 to-slate-800 border-2 border-slate-700 flex items-center justify-center group">
+                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Negro</span>
+            </div>
+
+            <!-- 8. Blanco -->
+            <div onclick="selectColor('Blanco', '#ffffff', 'blanco.wav')" 
+                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-slate-200 via-white to-slate-100 border border-slate-300 flex items-center justify-center group" style="box-shadow: 0 15px 35px -5px rgba(255, 255, 255, 0.2), inset 0 -8px 15px rgba(0, 0, 0, 0.08);">
+                <span class="text-slate-900 font-extrabold text-xs sm:text-lg drop-shadow-sm opacity-95 group-hover:scale-110 transition-transform">Blanco</span>
+            </div>
+
+            <!-- 9. Morado -->
+            <div onclick="selectColor('Morado', '#c084fc', 'morado.wav')" 
+                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-purple-700 via-purple-600 to-fuchsia-400 flex items-center justify-center group">
+                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Morado</span>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="text-center text-slate-500 text-xs mt-3">
+        <p>Asegúrate de colocar los archivos .wav (ej. amarillo.wav, rojo.wav) en la misma carpeta.</p>
+    </footer>
+
+    <script>
+    // Prevenir gestos de zoom táctil
+    document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+    }, { passive: false });
+
+    let audioActual = null;
+
+    function selectColor(nombreArchivo, nombreTexto, colorHex) {
+        const display = document.getElementById('displayText');
+
+        // Detener audio anterior
+        if (audioActual) {
+            audioActual.pause();
+            audioActual.currentTime = 0;
+        }
+
+        try {
+            // Crear y reproducir el audio asegurando compatibilidad en Android
+            audioActual = new Audio(nombreArchivo + '.wav');
+            audioActual.preload = 'auto';
+            
+            let playPromise = audioActual.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Error al reproducir audio:", error);
+                });
+            }
+        } catch (e) {
+            console.log("No se pudo cargar el archivo de audio", e);
+        }
+
+        // Actualizar texto y animación
+        display.classList.remove('animate-pop');
+        void display.offsetWidth; 
+        
+        display.textContent = nombreTexto;
+        display.style.color = colorHex;
+        display.classList.add('animate-pop');
+    }
+</script>
+</body>
+</html>

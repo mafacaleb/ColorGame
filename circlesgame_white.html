@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- Bloqueo de zoom para evitar que se acerque la pantalla al tocar -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Colores y Sonidos</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            /* Evita selección de texto y comportamientos táctiles no deseados */
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Evita desplazamiento de la página */
+        }
+
+        /* Cabecera / Pantalla de texto */
+        .header {
+            flex: 0 0 20vh;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            z-index: 10;
+        }
+
+        .display-text {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: transform 0.2s ease, color 0.2s ease;
+            text-align: center;
+        }
+
+        /* Animación para cuando se selecciona un color */
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-pop {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Cuadrícula de 3 columnas x 2 filas (para los 9 círculos) */
+        .grid-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 12px;
+            padding: 15px;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            align-items: center;
+            justify-items: center;
+        }
+
+        /* Círculos grandes interactivos */
+        .circle {
+            width: 100%;
+            height: 100%;
+            max-width: 140px;
+            max-height: 140px;
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: transform 0.1s ease, filter 0.1s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .circle:active {
+            transform: scale(0.92);
+            filter: brightness(0.9);
+        }
+
+        /* Colores específicos de cada círculo */
+        .c-rojo { background-color: #ff3b30; }
+        .c-azul { background-color: #007aff; }
+        .c-verde { background-color: #34c759; }
+        .c-amarillo { background-color: #ffcc00; }
+        .c-naranja { background-color: #ff9500; }
+        .c-rosa { background-color: #ff2d55; }
+        .c-negro { background-color: #1c1c1e; }
+        .c-blanco { background-color: #f2f2f7; border-color: #d1d1d6; }
+        .c-morado { background-color: #af52de; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div id="displayText" class="display-text" style="color: #8e8e93;">Toca un color</div>
+    </div>
+
+    <div class="grid-container">
+        <div class="circle c-rojo" data-color="Rojo" data-text-color="#ff3b30" onclick="selectColor('rojo', 'Rojo', '#ff3b30')"></div>
+        <div class="circle c-azul" data-color="Azul" data-text-color="#007aff" onclick="selectColor('azul', 'Azul', '#007aff')"></div>
+        <div class="circle c-verde" data-color="Verde" data-text-color="#248a3d" onclick="selectColor('verde', 'Verde', '#248a3d')"></div>
+        <div class="circle c-amarillo" data-color="Amarillo" data-text-color="#b28600" onclick="selectColor('amarillo', 'Amarillo', '#b28600')"></div>
+        <div class="circle c-naranja" data-color="Naranja" data-text-color="#c67300" onclick="selectColor('naranja', 'Naranja', '#c67300')"></div>
+        <div class="circle c-rosa" data-color="Rosa" data-text-color="#c9183d" onclick="selectColor('rosa', 'Rosa', '#c9183d')"></div>
+        <div class="circle c-negro" data-color="Negro" data-text-color="#1c1c1e" onclick="selectColor('negro', 'Negro', '#1c1c1e')"></div>
+        <div class="circle c-blanco" data-color="Blanco" data-text-color="#555555" onclick="selectColor('blanco', 'Blanco', '#555555')"></div>
+        <div class="circle c-morado" data-color="Morado" data-text-color="#af52de" onclick="selectColor('morado', 'Morado', '#af52de')"></div>
+    </div>
+
+    <script>
+    // Prevenir gestos de zoom táctil
+    document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+    }, { passive: false });
+
+    let audioActual = null;
+
+    function selectColor(nombreArchivo, nombreTexto, colorHex) {
+        const display = document.getElementById('displayText');
+
+        // Detener audio anterior
+        if (audioActual) {
+            audioActual.pause();
+            audioActual.currentTime = 0;
+        }
+
+        try {
+            // Crear y reproducir el audio asegurando compatibilidad en Android
+            audioActual = new Audio(nombreArchivo + '.wav');
+            audioActual.preload = 'auto';
+            
+            let playPromise = audioActual.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Error al reproducir audio:", error);
+                });
+            }
+        } catch (e) {
+            console.log("No se pudo cargar el archivo de audio", e);
+        }
+
+        // Actualizar texto y animación
+        display.classList.remove('animate-pop');
+        void display.offsetWidth; 
+        
+        display.textContent = nombreTexto;
+        display.style.color = colorHex;
+        display.classList.add('animate-pop');
+    }
+</script>
+</body>
+</html>
