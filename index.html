@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <!-- Bloqueo de zoom para evitar que se acerque la pantalla al tocar -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Colores y Sonidos</title>
+    <title>Aprende los Colores</title>
     <style>
         * {
             box-sizing: border-box;
@@ -156,7 +156,7 @@
 
         try {
             // Crear y reproducir el audio asegurando compatibilidad en Android
-            audioActual = new Audio(nombreArchivo + '.wav');
+            audioActual = new Audio(nombreArchivo + '.mp3');
             audioActual.preload = 'auto';
             
             let playPromise = audioActual.play();
