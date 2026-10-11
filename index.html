@@ -2,118 +2,128 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- Bloqueo de zoom para evitar que se acerque la pantalla al tocar -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Círculos Gigantes de Colores con Sonido</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <title>Colores y Sonidos</title>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            /* Evita selección de texto y comportamientos táctiles no deseados */
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
         }
+
+        body {
+            background-color: #f0f4f8;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Evita desplazamiento de la página */
+        }
+
+        /* Cabecera / Pantalla de texto */
+        .header {
+            flex: 0 0 20vh;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            z-index: 10;
+        }
+
+        .display-text {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: transform 0.2s ease, color 0.2s ease;
+            text-align: center;
+        }
+
+        /* Animación para cuando se selecciona un color */
         @keyframes popIn {
-            0% { transform: scale(0.85); opacity: 0; }
-            70% { transform: scale(1.04); opacity: 1; }
+            0% { transform: scale(0.8); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
             100% { transform: scale(1); opacity: 1; }
         }
+
         .animate-pop {
-            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        .color-circle {
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+        /* Cuadrícula de 3 columnas x 2 filas (para los 9 círculos) */
+        .grid-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 12px;
+            padding: 15px;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            align-items: center;
+            justify-items: center;
+        }
+
+        /* Círculos grandes interactivos */
+        .circle {
+            width: 100%;
+            height: 100%;
+            max-width: 140px;
+            max-height: 140px;
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
             cursor: pointer;
-            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4), inset 0 -8px 15px rgba(0, 0, 0, 0.2), inset 0 8px 15px rgba(255, 255, 255, 0.3);
+            transition: transform 0.1s ease, filter 0.1s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .color-circle:hover {
-            transform: translateY(-6px) scale(1.04);
-            box-shadow: 0 25px 45px -5px rgba(0, 0, 0, 0.6), inset 0 -8px 15px rgba(0, 0, 0, 0.2), inset 0 8px 15px rgba(255, 255, 255, 0.4);
+
+        .circle:active {
+            transform: scale(0.92);
+            filter: brightness(0.9);
         }
-        .color-circle:active {
-            transform: translateY(0) scale(0.97);
-        }
+
+        /* Colores específicos de cada círculo */
+        .c-rojo { background-color: #ff3b30; }
+        .c-azul { background-color: #007aff; }
+        .c-verde { background-color: #34c759; }
+        .c-amarillo { background-color: #ffcc00; }
+        .c-naranja { background-color: #ff9500; }
+        .c-rosa { background-color: #ff2d55; }
+        .c-negro { background-color: #1c1c1e; }
+        .c-blanco { background-color: #f2f2f7; border-color: #d1d1d6; }
+        .c-morado { background-color: #af52de; }
     </style>
 </head>
-<body class="flex flex-col justify-between items-center min-h-screen p-4 sm:p-6">
+<body>
 
-    <header class="text-center w-full max-w-4xl mb-2">
-        <h1 class="text-xl sm:text-3xl font-black text-white tracking-tight drop-shadow-md">Explorador de Colores con Sonido</h1>
-        <p class="text-slate-400 text-xs sm:text-sm mt-0.5">Haz clic en cualquier círculo gigante para escuchar y ver su nombre</p>
-    </header>
+    <div class="header">
+        <div id="displayText" class="display-text" style="color: #8e8e93;">Toca un color</div>
+    </div>
 
-    <main class="w-full max-w-5xl flex flex-col items-center justify-center my-auto flex-grow">
-        
-        <!-- Result Display Banner -->
-        <div id="display-card" class="mb-5 sm:mb-7 w-full max-w-md bg-slate-900/95 backdrop-blur-md border-2 border-slate-700/80 shadow-2xl rounded-2xl py-3 px-6 text-center transition-all duration-300">
-            <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 block mb-0.5">Color Seleccionado</span>
-            <h2 id="color-name" class="text-2xl sm:text-4xl font-black text-slate-100 tracking-wide transition-colors duration-300">¡Selecciona uno!</h2>
-            <div id="audio-status" class="text-[10px] text-slate-500 mt-1 h-4"></div>
-        </div>
-
-        <!-- Grid 3x3 de círculos -->
-        <div class="grid grid-cols-3 gap-3 sm:gap-6 lg:gap-8 w-full max-w-3xl justify-items-center items-center px-2">
-            
-            <!-- 1. Rojo -->
-            <div onclick="selectColor('Rojo', '#ef4444', 'rojo.wav')" 
-                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-red-600 via-red-500 to-rose-400 flex items-center justify-center group">
-                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Rojo</span>
-            </div>
-
-            <!-- 2. Azul -->
-            <div onclick="selectColor('Azul', '#3b82f6', 'azul.wav')" 
-                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-blue-600 via-blue-500 to-sky-400 flex items-center justify-center group">
-                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Azul</span>
-            </div>
-
-            <!-- 3. Verde -->
-            <div onclick="selectColor('Verde', '#22c55e', 'verde.wav')" 
-                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-green-600 via-green-500 to-emerald-300 flex items-center justify-center group">
-                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Verde</span>
-            </div>
-
-            <!-- 4. Amarillo -->
-            <div onclick="selectColor('Amarillo', '#facc15', 'amarillo.wav')" 
-                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-yellow-600 via-yellow-400 to-amber-200 flex items-center justify-center group">
-                <span class="text-slate-900 font-extrabold text-xs sm:text-lg drop-shadow-sm opacity-95 group-hover:scale-110 transition-transform">Amarillo</span>
-            </div>
-
-            <!-- 5. Naranja -->
-            <div onclick="selectColor('Naranja', '#f97316', 'naranja.wav')" 
-                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-orange-600 via-orange-500 to-amber-300 flex items-center justify-center group">
-                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Naranja</span>
-            </div>
-
-            <!-- 6. Rosa -->
-            <div onclick="selectColor('Rosa', '#ec4899', 'rosa.wav')" 
-                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-pink-600 via-pink-500 to-rose-300 flex items-center justify-center group">
-                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Rosa</span>
-            </div>
-
-            <!-- 7. Negro -->
-            <div onclick="selectColor('Negro', '#f8fafc', 'negro.wav')" 
-                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-black via-slate-900 to-slate-800 border-2 border-slate-700 flex items-center justify-center group">
-                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Negro</span>
-            </div>
-
-            <!-- 8. Blanco -->
-            <div onclick="selectColor('Blanco', '#ffffff', 'blanco.wav')" 
-                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-slate-200 via-white to-slate-100 border border-slate-300 flex items-center justify-center group" style="box-shadow: 0 15px 35px -5px rgba(255, 255, 255, 0.2), inset 0 -8px 15px rgba(0, 0, 0, 0.08);">
-                <span class="text-slate-900 font-extrabold text-xs sm:text-lg drop-shadow-sm opacity-95 group-hover:scale-110 transition-transform">Blanco</span>
-            </div>
-
-            <!-- 9. Morado -->
-            <div onclick="selectColor('Morado', '#c084fc', 'morado.wav')" 
-                 class="color-circle w-24 h-24 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-purple-700 via-purple-600 to-fuchsia-400 flex items-center justify-center group">
-                <span class="text-white font-extrabold text-xs sm:text-lg drop-shadow-md opacity-90 group-hover:scale-110 transition-transform">Morado</span>
-            </div>
-
-        </div>
-    </main>
-
-    <footer class="text-center text-slate-500 text-xs mt-3">
-        <p>Asegúrate de colocar los archivos .wav (ej. amarillo.wav, rojo.wav) en la misma carpeta.</p>
-    </footer>
+    <div class="grid-container">
+        <div class="circle c-rojo" data-color="Rojo" data-text-color="#ff3b30" onclick="selectColor('rojo', 'Rojo', '#ff3b30')"></div>
+        <div class="circle c-azul" data-color="Azul" data-text-color="#007aff" onclick="selectColor('azul', 'Azul', '#007aff')"></div>
+        <div class="circle c-verde" data-color="Verde" data-text-color="#248a3d" onclick="selectColor('verde', 'Verde', '#248a3d')"></div>
+        <div class="circle c-amarillo" data-color="Amarillo" data-text-color="#b28600" onclick="selectColor('amarillo', 'Amarillo', '#b28600')"></div>
+        <div class="circle c-naranja" data-color="Naranja" data-text-color="#c67300" onclick="selectColor('naranja', 'Naranja', '#c67300')"></div>
+        <div class="circle c-rosa" data-color="Rosa" data-text-color="#c9183d" onclick="selectColor('rosa', 'Rosa', '#c9183d')"></div>
+        <div class="circle c-negro" data-color="Negro" data-text-color="#1c1c1e" onclick="selectColor('negro', 'Negro', '#1c1c1e')"></div>
+        <div class="circle c-blanco" data-color="Blanco" data-text-color="#555555" onclick="selectColor('blanco', 'Blanco', '#555555')"></div>
+        <div class="circle c-morado" data-color="Morado" data-text-color="#af52de" onclick="selectColor('morado', 'Morado', '#af52de')"></div>
+    </div>
 
     <script>
     // Prevenir gestos de zoom táctil
