@@ -101,23 +101,11 @@
         .c-verde { background-color: #34c759; }
         .c-amarillo { background-color: #ffcc00; }
         .c-naranja { background-color: #ff9500; }
-        .c-rosa { background-color: #ff2d55; }
+        .c-rosa { background-color: #eb6ca7; }
         .c-negro { background-color: #1c1c1e; }
         .c-blanco { background-color: #f2f2f7; border-color: #d1d1d6; }
         .c-morado { background-color: #af52de; }
     </style>
-    <!-- Configuración para PWA / App instalable -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ffffff">
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker registrado con éxito', reg))
-                    .catch(err => console.log('Error al registrar Service Worker', err));
-            });
-        }
-    </script>
 </head>
 <body>
 
@@ -131,7 +119,7 @@
         <div class="circle c-verde" data-color="Verde" data-text-color="#248a3d" onclick="selectColor('verde', 'Verde', '#248a3d')"></div>
         <div class="circle c-amarillo" data-color="Amarillo" data-text-color="#b28600" onclick="selectColor('amarillo', 'Amarillo', '#b28600')"></div>
         <div class="circle c-naranja" data-color="Naranja" data-text-color="#c67300" onclick="selectColor('naranja', 'Naranja', '#c67300')"></div>
-        <div class="circle c-rosa" data-color="Rosa" data-text-color="#c9183d" onclick="selectColor('rosa', 'Rosa', '#c9183d')"></div>
+        <div class="circle c-rosa" data-color="Rosa" data-text-color="#eb6ca7" onclick="selectColor('rosa', 'Rosa', '#eb6ca7')"></div>
         <div class="circle c-negro" data-color="Negro" data-text-color="#1c1c1e" onclick="selectColor('negro', 'Negro', '#1c1c1e')"></div>
         <div class="circle c-blanco" data-color="Blanco" data-text-color="#555555" onclick="selectColor('blanco', 'Blanco', '#555555')"></div>
         <div class="circle c-morado" data-color="Morado" data-text-color="#af52de" onclick="selectColor('morado', 'Morado', '#af52de')"></div>
